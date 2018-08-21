@@ -1,0 +1,12 @@
+main: de.jeffclan.InvUnloader.InvUnloader
+name: InvUnload
+version: 0.1-alpha
+api-version: 1.13
+description: Unloads inventory in nearby matching chests
+author: mfnalex
+prefix: InvUnload
+database: false 
+commands:
+  unload:
+    description: Unloads inventory in nearby matching chests
+    usage: /<command>
