@@ -1,4 +1,4 @@
-package de.jeffclan.InvUnloader;
+package de.jeffclan.InvUnload;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
