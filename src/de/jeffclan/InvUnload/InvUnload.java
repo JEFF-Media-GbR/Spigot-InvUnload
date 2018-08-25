@@ -272,7 +272,7 @@ public class InvUnload extends JavaPlugin implements CommandExecutor {
 					}
 				}
 			}
-			if(getConfig().getBoolean("unload-before-dumping")) {
+			if(getConfig().getBoolean("unload-before-dumping") && p.hasPermission("invunload.unload")) {
 				unloadInventory(p, radius, false);
 			}
 			dumpInventory(p, radius);
