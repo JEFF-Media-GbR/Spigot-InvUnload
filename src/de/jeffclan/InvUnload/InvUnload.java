@@ -21,13 +21,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class InvUnload extends JavaPlugin implements CommandExecutor {
+public class InvUnload extends JavaPlugin implements CommandExecutor , Listener {
 
 	private static final int currentConfigVersion = 1;
 
@@ -335,6 +336,7 @@ public class InvUnload extends JavaPlugin implements CommandExecutor {
 
 		getCommand("unload").setExecutor(this);
 		getCommand("dump").setExecutor(this);
+		getServer().getPluginManager().registerEvents(this, this);
 		messages = new Messages(this);
 
 		@SuppressWarnings("unused")
