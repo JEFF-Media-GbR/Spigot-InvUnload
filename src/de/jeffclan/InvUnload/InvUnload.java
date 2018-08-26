@@ -20,6 +20,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -45,6 +47,13 @@ public class InvUnload extends JavaPlugin implements CommandExecutor {
 		}
 
 		return freeSlots;
+	}
+	
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		if (event.getPlayer().isOp()) {
+			updateChecker.sendUpdateMessage(event.getPlayer());
+		}
 	}
 
 	public static List<Material> getInventoryContents(Inventory inventory) {
