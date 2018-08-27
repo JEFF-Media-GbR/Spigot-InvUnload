@@ -149,6 +149,11 @@ public class InvUnload extends JavaPlugin implements CommandExecutor , Listener 
 			playerStuffList.remove(p.getInventory().getItem(i));
 		}
 		ItemStack[] playerStuff = playerStuffList.toArray(new ItemStack[playerStuffList.size()]);
+		
+
+		/*if(count==0) {
+			p.sendMessage(messages.MSG_INVENTORY_EMPTY);
+		}*/
 
 		/*
 		 * for (ChestSpaceCombination chestSpaceCombination : chestSpaceCombinations) {
@@ -283,6 +288,7 @@ public class InvUnload extends JavaPlugin implements CommandExecutor , Listener 
 				}
 			}
 			if(getConfig().getBoolean("unload-before-dumping") && p.hasPermission("invunload.unload")) {
+				
 				unloadInventory(p, radius, false);
 			}
 			dumpInventory(p, radius);
@@ -362,12 +368,12 @@ public class InvUnload extends JavaPlugin implements CommandExecutor , Listener 
 
 	}
 
-	public void unloadInventory(Player p, int radius, boolean showMessageOnFail) {
+	public boolean unloadInventory(Player p, int radius, boolean showMessageOnFail) {
 
 		if (getNearbyChests(p.getLocation(), radius).size() == 0) {
 			if (showMessageOnFail)
 				p.sendMessage(messages.MSG_NO_CHESTS_NEARBY);
-			return;
+			return false;
 		}
 
 		List<Block> nearbyBlocks = getNearbyChests(p.getLocation(), radius);
@@ -379,7 +385,8 @@ public class InvUnload extends JavaPlugin implements CommandExecutor , Listener 
 			Inventory chestInventory = ((Chest) block.getState()).getInventory();
 
 			// iterate through all items in the player's inventory
-			for (ItemStack itemStack : playerInventory.getContents()) {
+
+			for (ItemStack itemStack : playerInventory.getStorageContents()) {
 
 				// discard empty stacks
 				if (isItemStackEmpty(itemStack))
@@ -429,9 +436,11 @@ public class InvUnload extends JavaPlugin implements CommandExecutor , Listener 
 				World world = block.getLocation().getWorld();
 				world.spawnParticle(particleType, block.getLocation().add(0.5, 0.75, 0.5), particleCount);
 			}
+			return true;
 		} else {
 			if (showMessageOnFail)
 				p.sendMessage(messages.MSG_COULD_NOT_UNLOAD);
+				return false;
 		}
 
 	}

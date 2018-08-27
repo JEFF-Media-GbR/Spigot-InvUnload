@@ -26,6 +26,9 @@ public class Messages {
 		MSG_NO_CHESTS_NEARBY = PREFIX+ ChatColor.translateAlternateColorCodes('&', plugin.getConfig()
 				.getString("message-no-chests-nearby","&7There are no chests nearby. Adjust the radius or walk closer to your chests."));
 		
+		//MSG_INVENTORY_EMPTY = PREFIX+ ChatColor.translateAlternateColorCodes('&', plugin.getConfig()
+		//		.getString("message-inventory-empty","&7Nothing to dump: Your inventory was already empty."));
+		
 		
 	}
 }
