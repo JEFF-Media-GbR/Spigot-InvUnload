@@ -57,10 +57,16 @@ message-no-chests-nearby: "&7There are no chests nearby. Adjust the radius or wa
 message-error-not-a-number: "&cError:&7 '%s' is not a valid number."
 
 ##### German
-#message-could-not-unload: "&7Konnte nichts abladen. Hast du keine Kisten für die verbleibenden Sachen?"
-#message-radius-too-high: "&cFehler:&7 Der Radius kann nicht größer als %d Blöcke sein."
-#message-no-chests-nearby: "&7Es sind keine Kisten in der Nähe. Vergrößer den Radius oder gehe näher zu deinen Kisten."
-#message-error-not-a-number: "&cFehler:&7 '%s' ist keine gültige Zahl."
+#message-could-not-unload: "&7Konnte nichts abladen. Hast du keine Kisten fÃ¼r die verbleibenden Sachen?"
+#message-radius-too-high: "&cFehler:&7 Der Radius kann nicht grÃ¶ÃŸer als %d BlÃ¶cke sein."
+#message-no-chests-nearby: "&7Es sind keine Kisten in der NÃ¤he. VergrÃ¶ÃŸer den Radius oder gehe nÃ¤her zu deinen Kisten."
+#message-error-not-a-number: "&cFehler:&7 '%s' ist keine gÃ¼ltige Zahl."
+
+##### French
+#message-could-not-unload: "&7Il n'y avait rien Ã  dÃ©charger. Peut-Ãªtre qu'il n'y a pas de coffres pour les objets restants?"
+#message-radius-too-high: "&cErreur:&7 Le rayon ne peut pas Ãªtre plus grand que &d blocs."
+#message-no-chests-nearby: "&7Il n'y a aucun coffres Ã  proximitÃ©. Ajustez le rayon ou approchez-vous de vos coffres."
+#message-error-not-a-number: "&cErreur:&7 '%s' n'est pas un nombre valide."
 
 #########################
 #####     Done!     #####
