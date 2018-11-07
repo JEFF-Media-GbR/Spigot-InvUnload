@@ -38,7 +38,7 @@ import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 
-public class InvUnload extends JavaPlugin implements CommandExecutor , Listener {
+public class InvUnload extends JavaPlugin implements CommandExecutor, Listener {
 
 	private static final int currentConfigVersion = 1;
 
@@ -59,7 +59,7 @@ public class InvUnload extends JavaPlugin implements CommandExecutor , Listener 
 
 		return freeSlots;
 	}
-	
+
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		if (event.getPlayer().isOp()) {
@@ -80,28 +80,17 @@ public class InvUnload extends JavaPlugin implements CommandExecutor , Listener 
 
 		return contents;
 	}
-	
-	public boolean canUseChestAtLocation(Player player, Location loc) {
-		
-		WorldGuardPlugin worldGuard = getWorldGuard();
-		
-		if(worldGuard==null) {
-			return true;
-		}
-		
-		worldGuard.get
-		
-		
-		return true;
-	}
 
-	public static List<Block> getNearbyChests(Location location, int radius) {
+
+	public List<Block> getNearbyChests(Location location, int radius,Player player) {
 		List<Block> blocks = new ArrayList<Block>();
 		for (int x = location.getBlockX() - radius; x <= location.getBlockX() + radius; x++) {
 			for (int y = location.getBlockY() - radius; y <= location.getBlockY() + radius; y++) {
 				for (int z = location.getBlockZ() - radius; z <= location.getBlockZ() + radius; z++) {
 					if (location.getWorld().getBlockAt(x, y, z).getState() instanceof Chest) {
-						blocks.add(location.getWorld().getBlockAt(x, y, z));
+						if(canUseChestHere(player, location.getWorld().getBlockAt(x, y, z).getLocation())) {
+							blocks.add(location.getWorld().getBlockAt(x, y, z));
+						}
 					}
 				}
 			}
@@ -139,19 +128,19 @@ public class InvUnload extends JavaPlugin implements CommandExecutor , Listener 
 
 	private Messages messages;
 	private int updateCheckInterval = 86400;
-	
+
 	protected WorldGuard worldGuard;
 
 	private void dumpInventory(Player p, int radius) {
 		ArrayList<ChestSpaceCombination> chestSpaceCombinations = new ArrayList<ChestSpaceCombination>();
 		List<Block> whereToSpawnParticles = new ArrayList<Block>();
 
-		if (getNearbyChests(p.getLocation(), radius).size() == 0) {
+		if (getNearbyChests(p.getLocation(), radius,p).size() == 0) {
 			p.sendMessage(messages.MSG_NO_CHESTS_NEARBY);
 			return;
 		}
 
-		for (Block block : getNearbyChests(p.getLocation(), radius)) {
+		for (Block block : getNearbyChests(p.getLocation(), radius,p)) {
 			InventoryHolder holder = ((Chest) block.getState()).getInventory().getHolder();
 			if (holder instanceof DoubleChest) {
 				DoubleChest doubleChest = ((DoubleChest) holder);
@@ -175,11 +164,10 @@ public class InvUnload extends JavaPlugin implements CommandExecutor , Listener 
 			playerStuffList.remove(p.getInventory().getItem(i));
 		}
 		ItemStack[] playerStuff = playerStuffList.toArray(new ItemStack[playerStuffList.size()]);
-		
 
-		/*if(count==0) {
-			p.sendMessage(messages.MSG_INVENTORY_EMPTY);
-		}*/
+		/*
+		 * if(count==0) { p.sendMessage(messages.MSG_INVENTORY_EMPTY); }
+		 */
 
 		/*
 		 * for (ChestSpaceCombination chestSpaceCombination : chestSpaceCombinations) {
@@ -267,7 +255,7 @@ public class InvUnload extends JavaPlugin implements CommandExecutor , Listener 
 			for (Block block : whereToSpawnParticles) {
 				World world = block.getLocation().getWorld();
 				world.spawnParticle(particleTypeDump, block.getLocation().add(0.5, 0.75, 0.5), particleCount);
-				//System.out.println("Spawning particles for dump");
+				// System.out.println("Spawning particles for dump");
 			}
 		}
 
@@ -313,8 +301,8 @@ public class InvUnload extends JavaPlugin implements CommandExecutor , Listener 
 					}
 				}
 			}
-			if(getConfig().getBoolean("unload-before-dumping") && p.hasPermission("invunload.unload")) {
-				
+			if (getConfig().getBoolean("unload-before-dumping") && p.hasPermission("invunload.unload")) {
+
 				unloadInventory(p, radius, false);
 			}
 			dumpInventory(p, radius);
@@ -323,30 +311,50 @@ public class InvUnload extends JavaPlugin implements CommandExecutor , Listener 
 
 		return false;
 	}
-	
+
+	protected WorldGuardPlugin getWorldGuard() {
+		Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
+
+		// WorldGuard may not be loaded
+		if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
+			return null; // Maybe you want throw an exception instead
+		}
+
+		return (WorldGuardPlugin) plugin;
+	}
+
 	protected boolean canUseChestHere(Player player, Location loc) {
-		if(WorldGuard.getInstance()==null) {
+		if (WorldGuard.getInstance() == null || getWorldGuard() == null) {
 			return true;
 		}
+
+		// return false when no chest access
+		if (!StateFlag.test(WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery()
+				.queryState(BukkitAdapter.adapt(loc), getWorldGuard().wrapPlayer(player), Flags.CHEST_ACCESS))) {
+			return false;
+		}
 		
- 		if(StateFlag.test(WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery()
-                .queryState(BukkitAdapter.adapt(loc), player), Flags.CHEST_ACCESS)))  {
-       //region has the chest-access flag set
-}
+		// return false when use is prohibited
+		if (!StateFlag.test(WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery()
+				.queryState(BukkitAdapter.adapt(loc), getWorldGuard().wrapPlayer(player), Flags.USE))) {
+			return false;
+		}
+		
+		return true;
 	}
 
 	@Override
 	public void onEnable() {
 
 		saveDefaultConfig();
-		
+
 		worldGuard = WorldGuard.getInstance();
-		
-		if(!(worldGuard instanceof WorldGuard)) {
+
+		if (!(worldGuard instanceof WorldGuard)) {
 			worldGuard = null;
 		}
-		
-		if(worldGuard!=null) {
+
+		if (worldGuard != null) {
 			getLogger().info("Hooked into WorldGuard succesfully.");
 		}
 
@@ -417,13 +425,15 @@ public class InvUnload extends JavaPlugin implements CommandExecutor , Listener 
 
 	public boolean unloadInventory(Player p, int radius, boolean showMessageOnFail) {
 
-		if (getNearbyChests(p.getLocation(), radius).size() == 0) {
+		List<Block> nearbyBlocks = getNearbyChests(p.getLocation(), radius,p);
+		
+		if (nearbyBlocks.size() == 0) {
 			if (showMessageOnFail)
 				p.sendMessage(messages.MSG_NO_CHESTS_NEARBY);
 			return false;
 		}
 
-		List<Block> nearbyBlocks = getNearbyChests(p.getLocation(), radius);
+		
 		List<Block> whereToSpawnParticles = new ArrayList<Block>();
 		Inventory playerInventory = p.getInventory();
 
@@ -487,7 +497,7 @@ public class InvUnload extends JavaPlugin implements CommandExecutor , Listener 
 		} else {
 			if (showMessageOnFail)
 				p.sendMessage(messages.MSG_COULD_NOT_UNLOAD);
-				return false;
+			return false;
 		}
 
 	}
