@@ -112,20 +112,25 @@ public class InvUnload extends JavaPlugin implements CommandExecutor, Listener {
 		}
 
 		// getLogger().info("WorldGuard is active");
+		
+		
+		// return false when use is prohibited
+		if (WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery().queryState(
+				BukkitAdapter.adapt(loc), getWorldGuard().wrapPlayer(player), Flags.USE) == StateFlag.State.DENY) {
+			 getLogger().info("No Use access here!");
+			return false;
+		}		
 
 		if (WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery().queryState(
 				BukkitAdapter.adapt(loc), getWorldGuard().wrapPlayer(player),
 				Flags.CHEST_ACCESS) == StateFlag.State.DENY) {
-			// getLogger().info("No chest access here!");
+			 getLogger().info("No chest access here!");
+			
 			return false;
 		}
+		
+	
 
-		// return false when use is prohibited
-		if (WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery().queryState(
-				BukkitAdapter.adapt(loc), getWorldGuard().wrapPlayer(player), Flags.USE) == StateFlag.State.DENY) {
-			// getLogger().info("No Use access here!");
-			return false;
-		}
 		// getLogger().info("This chest is accessible.");
 		return true;
 	}
@@ -338,6 +343,8 @@ public class InvUnload extends JavaPlugin implements CommandExecutor, Listener {
 
 			if (worldGuard != null) {
 				getLogger().info("Hooked into WorldGuard succesfully.");
+				getLogger().info("*** Please note that WorldGuard integration is currently experimental ***");
+				getLogger().info("*** See the config.yml file for more information ***");
 			}
 		}
 
@@ -391,7 +398,7 @@ public class InvUnload extends JavaPlugin implements CommandExecutor, Listener {
 		getConfig().addDefault("max-chest-radius", 20);
 		getConfig().addDefault("config-version", 0);
 		getConfig().addDefault("check-for-updates", "true");
-		getConfig().addDefault("use-worldguard", true);
+		getConfig().addDefault("use-worldguard", false);
 
 		updateChecker = new UpdateChecker(this);
 
