@@ -32,6 +32,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 
@@ -110,19 +111,27 @@ public class InvUnload extends JavaPlugin implements CommandExecutor, Listener {
 		if (WorldGuard.getInstance() == null || getWorldGuard() == null) {
 			return true;
 		}
+		
+		getLogger().info("WorldGuard is active");
 
+		
+		// TODO: WHEN NO CHEST_ACCESS FLAG IS SET; AND CHEST ACCESS DEFAULTS TO TRUE, RETURN TRUE
 		// return false when no chest access
+		
 		if (!StateFlag.test(WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery()
 				.queryState(BukkitAdapter.adapt(loc), getWorldGuard().wrapPlayer(player), Flags.CHEST_ACCESS))) {
+			getLogger().info("No chest access here!");
 			return false;
 		}
+		
 		
 		// return false when use is prohibited
 		if (!StateFlag.test(WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery()
 				.queryState(BukkitAdapter.adapt(loc), getWorldGuard().wrapPlayer(player), Flags.USE))) {
+			getLogger().info("No Use access here!");
 			return false;
 		}
-		
+		getLogger().info("This chest is accessible.");
 		return true;
 	}
 
@@ -253,14 +262,11 @@ public class InvUnload extends JavaPlugin implements CommandExecutor, Listener {
 	}
 
 	protected WorldGuardPlugin getWorldGuard() {
-		Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
+		WorldGuardPlugin WG = (WorldGuardPlugin) getServer().getPluginManager().getPlugin("WorldGuard");
+        if(WG == null)
+            return null;
 
-		// WorldGuard may not be loaded
-		if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
-			return null; // Maybe you want throw an exception instead
-		}
-
-		return (WorldGuardPlugin) plugin;
+        return WG;
 	}
 
 	@Override
