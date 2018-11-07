@@ -117,14 +117,14 @@ public class InvUnload extends JavaPlugin implements CommandExecutor, Listener {
 		// return false when use is prohibited
 		if (WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery().queryState(
 				BukkitAdapter.adapt(loc), getWorldGuard().wrapPlayer(player), Flags.USE) == StateFlag.State.DENY) {
-			 getLogger().info("No Use access here!");
+			 //getLogger().info("No Use access here!");
 			return false;
 		}		
 
 		if (WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery().queryState(
 				BukkitAdapter.adapt(loc), getWorldGuard().wrapPlayer(player),
 				Flags.CHEST_ACCESS) == StateFlag.State.DENY) {
-			 getLogger().info("No chest access here!");
+			 //getLogger().info("No chest access here!");
 			
 			return false;
 		}
