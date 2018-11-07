@@ -24,6 +24,12 @@ default-chest-radius: 10
 # chests, and then proceed to /dump the remaining items 
 unload-before-dumping: true
 
+# When set to true, try to hook into WorldGuard if it is running.
+# Players can only unload items into chests that they have acces to.
+# That means that players must have access to "use" and "chest-access"
+# inside the chest's WorldGuard region.
+use-worldguard: true
+
 # should we check for updates?
 # when enabled, a message is printed in the console if a new
 # version has been found, and OPs will be notified when they
@@ -73,4 +79,4 @@ message-error-not-a-number: "&cError:&7 '%s' is not a valid number."
 #########################
 
 # please do not change the following line manually!
-config-version: 1
+config-version: 2

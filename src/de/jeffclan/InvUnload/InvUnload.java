@@ -26,19 +26,17 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 
 public class InvUnload extends JavaPlugin implements CommandExecutor, Listener {
 
-	private static final int currentConfigVersion = 1;
+	private static final int currentConfigVersion = 2;
 
 	public static int freeSlotsInChest(Block block) {
 
@@ -107,31 +105,29 @@ public class InvUnload extends JavaPlugin implements CommandExecutor, Listener {
 
 	protected WorldGuard worldGuard;
 	
+	// Checks permission for chest usage
 	protected boolean canUseChestHere(Player player, Location loc) {
-		if (WorldGuard.getInstance() == null || getWorldGuard() == null) {
+		if (WorldGuard.getInstance() == null || getWorldGuard() == null || getConfig().getBoolean("use-worldguard")==false) {
 			return true;
 		}
 		
-		getLogger().info("WorldGuard is active");
-
+		//getLogger().info("WorldGuard is active");
 		
-		// TODO: WHEN NO CHEST_ACCESS FLAG IS SET; AND CHEST ACCESS DEFAULTS TO TRUE, RETURN TRUE
-		// return false when no chest access
+	
 		
-		if (!StateFlag.test(WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery()
-				.queryState(BukkitAdapter.adapt(loc), getWorldGuard().wrapPlayer(player), Flags.CHEST_ACCESS))) {
-			getLogger().info("No chest access here!");
+		if (WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery()
+				.queryState(BukkitAdapter.adapt(loc), getWorldGuard().wrapPlayer(player), Flags.CHEST_ACCESS)==StateFlag.State.DENY) {
+			//getLogger().info("No chest access here!");
 			return false;
 		}
-		
 		
 		// return false when use is prohibited
-		if (!StateFlag.test(WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery()
-				.queryState(BukkitAdapter.adapt(loc), getWorldGuard().wrapPlayer(player), Flags.USE))) {
-			getLogger().info("No Use access here!");
+		if (WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery()
+				.queryState(BukkitAdapter.adapt(loc), getWorldGuard().wrapPlayer(player), Flags.USE)==StateFlag.State.DENY) {
+			//getLogger().info("No Use access here!");
 			return false;
 		}
-		getLogger().info("This chest is accessible.");
+		//getLogger().info("This chest is accessible.");
 		return true;
 	}
 
@@ -394,6 +390,7 @@ public class InvUnload extends JavaPlugin implements CommandExecutor, Listener {
 		getConfig().addDefault("max-chest-radius", 20);
 		getConfig().addDefault("config-version", 0);
 		getConfig().addDefault("check-for-updates", "true");
+		getConfig().addDefault("use-worldguard", true);
 
 		updateChecker = new UpdateChecker(this);
 
