@@ -24,11 +24,11 @@ default-chest-radius: 10
 # chests, and then proceed to /dump the remaining items 
 unload-before-dumping: true
 
+# **** EXPERIMENTAL ****
 # When set to true, try to hook into WorldGuard if it is running.
-# Players can only unload items into chests that they have acces to.
-# That means that players must have access to "use" and "chest-access"
-# inside the chest's WorldGuard region.
-use-worldguard: true
+# Players will not be able to unload or dump stuff into chests inside 
+# regions that have the flags "chest-access" or "use" set to deny.
+use-worldguard: false
 
 # should we check for updates?
 # when enabled, a message is printed in the console if a new
@@ -62,17 +62,11 @@ message-radius-too-high: "&cError:&7 The radius cannot be higher than %d blocks.
 message-no-chests-nearby: "&7There are no chests nearby. Adjust the radius or walk closer to your chests."
 message-error-not-a-number: "&cError:&7 '%s' is not a valid number."
 
-##### German
-#message-could-not-unload: "&7Konnte nichts abladen. Hast du keine Kisten für die verbleibenden Sachen?"
-#message-radius-too-high: "&cFehler:&7 Der Radius kann nicht größer als %d Blöcke sein."
-#message-no-chests-nearby: "&7Es sind keine Kisten in der Nähe. Vergrößer den Radius oder gehe näher zu deinen Kisten."
-#message-error-not-a-number: "&cFehler:&7 '%s' ist keine gültige Zahl."
-
-##### French
-#message-could-not-unload: "&7Il n'y avait rien à décharger. Peut-être qu'il n'y a pas de coffres pour les objets restants?"
-#message-radius-too-high: "&cErreur:&7 Le rayon ne peut pas être plus grand que &d blocs."
-#message-no-chests-nearby: "&7Il n'y a aucun coffres à proximité. Ajustez le rayon ou approchez-vous de vos coffres."
-#message-error-not-a-number: "&cErreur:&7 '%s' n'est pas un nombre valide."
+##### Chinese (Simplified)
+#message-could-not-unload: "&7没有东西可以卸下，也许你没有给其余物品的箱子？"
+#message-radius-too-high: "&c错误:&7 范围不得高于 %d 个方块。"
+#message-no-chests-nearby: "&7附近没有箱子，调整范围或靠近箱子一点。"
+#message-error-not-a-number: "&c错误:&7 '%s' 不是一个有效的数字。"
 
 ##### Chinese (Traditional)
 #message-could-not-unload: "&7沒有東西可以卸下，也許你沒有給其餘物品的箱子？"
@@ -80,11 +74,23 @@ message-error-not-a-number: "&cError:&7 '%s' is not a valid number."
 #message-no-chests-nearby: "&7附近沒有箱子，調整範圍或靠近箱子一點。"
 #message-error-not-a-number: "&c錯誤:&7 '%s' 不是一個有效的數字。"
 
-##### Chinese (Simplified)
-#message-could-not-unload: "&7没有东西可以卸下，也许你没有给其余物品的箱子？"
-#message-radius-too-high: "&c错误:&7 范围不得高于 %d 个方块。"
-#message-no-chests-nearby: "&7附近没有箱子，调整范围或靠近箱子一点。"
-#message-error-not-a-number: "&c错误:&7 '%s' 不是一个有效的数字。"
+##### French
+#message-could-not-unload: "&7Il n'y avait rien à décharger. Peut-être qu'il n'y a pas de coffres pour les objets restants?"
+#message-radius-too-high: "&cErreur:&7 Le rayon ne peut pas être plus grand que &d blocs."
+#message-no-chests-nearby: "&7Il n'y a aucun coffres à proximité. Ajustez le rayon ou approchez-vous de vos coffres."
+#message-error-not-a-number: "&cErreur:&7 '%s' n'est pas un nombre valide."
+
+##### German
+#message-could-not-unload: "&7Konnte nichts abladen. Hast du keine Kisten für die verbleibenden Sachen?"
+#message-radius-too-high: "&cFehler:&7 Der Radius kann nicht größer als %d Blöcke sein."
+#message-no-chests-nearby: "&7Es sind keine Kisten in der Nähe. Vergrößer den Radius oder gehe näher zu deinen Kisten."
+#message-error-not-a-number: "&cFehler:&7 '%s' ist keine gültige Zahl."
+
+##### Japanese
+#message-could-not-unload: "&7荷物が下ろせません。目印になるアイテムがチェストにありますか？"
+#message-radius-too-high: "&cError:&7 半径は %d個のブロックより大きくすることは出来ません。"
+#message-no-chests-nearby: "&7近くにチェストがありません。半径を調整するかチェストに近づいて下さい。"
+#message-error-not-a-number: "&cError:&7 '%s'は有効な数字ではありません。"
 
 #########################
 #####     Done!     #####
