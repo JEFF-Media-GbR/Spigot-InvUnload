@@ -74,6 +74,12 @@ message-error-not-a-number: "&cError:&7 '%s' is not a valid number."
 #message-no-chests-nearby: "&7Il n'y a aucun coffres à proximité. Ajustez le rayon ou approchez-vous de vos coffres."
 #message-error-not-a-number: "&cErreur:&7 '%s' n'est pas un nombre valide."
 
+##### Chinese (Traditional)
+#message-could-not-unload: "&7沒有東西可以卸下，也許你沒有給其餘物品的箱子？"
+#message-radius-too-high: "&c錯誤:&7 範圍不得高於 %d 個方塊。"
+#message-no-chests-nearby: "&7附近沒有箱子，調整範圍或靠近箱子一點。"
+#message-error-not-a-number: "&c錯誤:&7 '%s' 不是一個有效的數字。"
+
 #########################
 #####     Done!     #####
 #########################
