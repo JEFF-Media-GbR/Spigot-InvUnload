@@ -7,6 +7,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.flags.Flags;
+import com.sk89q.worldguard.protection.flags.StateFlag;
+import de.jeffclan.JeffChestSort.JeffChestSortPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -27,12 +33,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.flags.Flags;
-import com.sk89q.worldguard.protection.flags.StateFlag;
 
 public class InvUnload extends JavaPlugin implements CommandExecutor, Listener {
 
@@ -106,7 +106,7 @@ public class InvUnload extends JavaPlugin implements CommandExecutor, Listener {
 
 	// Checks permission for chest usage
 	protected boolean canUseChestHere(Player player, Location loc) {
-		
+
 		try {
 			 Class.forName( "com.sk89q.worldguard.bukkit.WorldGuardPlugin" );
 			 Class.forName( "com.sk89q.worldguard.WorldGuard" );
@@ -114,31 +114,31 @@ public class InvUnload extends JavaPlugin implements CommandExecutor, Listener {
 				//getLogger().info("WorldGuard not found");
 				return true;
 			}
-		
+
 		if (WorldGuard.getInstance() == null || getWorldGuard() == null
 				|| getConfig().getBoolean("use-worldguard") == false) {
 			return true;
 		}
 
 		// getLogger().info("WorldGuard is active");
-		
-		
+
+
 		// return false when use is prohibited
 		if (WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery().queryState(
 				BukkitAdapter.adapt(loc), getWorldGuard().wrapPlayer(player), Flags.USE) == StateFlag.State.DENY) {
 			 //getLogger().info("No Use access here!");
 			return false;
-		}		
+		}
 
 		if (WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery().queryState(
 				BukkitAdapter.adapt(loc), getWorldGuard().wrapPlayer(player),
 				Flags.CHEST_ACCESS) == StateFlag.State.DENY) {
 			 //getLogger().info("No chest access here!");
-			
+
 			return false;
 		}
-		
-	
+
+
 
 		// getLogger().info("This chest is accessible.");
 		return true;
@@ -189,8 +189,9 @@ public class InvUnload extends JavaPlugin implements CommandExecutor, Listener {
 
 			p.getInventory().remove(itemStack);
 			int amount = itemStack.getAmount();
-			HashMap<Integer, ItemStack> unstorable = ((InventoryHolder) chestInventories.get(0).getState())
-					.getInventory().addItem(itemStack);
+			Inventory firstChestInventory = ((InventoryHolder) chestInventories.get(0).getState())
+					.getInventory();
+			HashMap<Integer, ItemStack> unstorable = addItemsToChestInventory(firstChestInventory, itemStack);
 
 			if (unstorable.size() == 0 || unstorable.get(0).getAmount() != amount) {
 
@@ -216,8 +217,8 @@ public class InvUnload extends JavaPlugin implements CommandExecutor, Listener {
 
 			while (unstorable.size() > 0 && chestInventories.size() > 0) {
 				int amount1 = unstorable.get(0).getAmount();
-				unstorable = ((InventoryHolder) chestInventories.get(0).getState()).getInventory()
-						.addItem(unstorable.get(0));
+				Inventory remainingChestInventory = ((InventoryHolder) chestInventories.get(0).getState()).getInventory();
+				unstorable = addItemsToChestInventory(remainingChestInventory, unstorable.get(0));
 				if (unstorable.size() == 0 || unstorable.get(0).getAmount() != amount1) {
 
 					InventoryHolder holder = ((Chest) chestInventories.get(0).getState()).getInventory().getHolder();
@@ -254,6 +255,24 @@ public class InvUnload extends JavaPlugin implements CommandExecutor, Listener {
 
 	}
 
+	private HashMap<Integer, ItemStack> addItemsToChestInventory(Inventory inventory,
+			ItemStack itemStack) {
+		HashMap<Integer, ItemStack> unstorableItems = inventory.addItem(itemStack);
+		trySort(inventory);
+		return unstorableItems;
+	}
+
+	private void trySort(Inventory inventory) {
+		JeffChestSortPlugin chestSort = (JeffChestSortPlugin) getServer().getPluginManager().getPlugin("ChestSort");
+
+		if(!(chestSort instanceof JeffChestSortPlugin)) {
+			getLogger().warning("ChestSort plugin not found.");
+			return;
+		}
+
+		chestSort.sortInventory(inventory);
+	}
+
 	public List<Block> getNearbyChests(Location location, int radius, Player player) {
 		List<Block> blocks = new ArrayList<Block>();
 		for (int x = location.getBlockX() - radius; x <= location.getBlockX() + radius; x++) {
@@ -271,13 +290,13 @@ public class InvUnload extends JavaPlugin implements CommandExecutor, Listener {
 	}
 
 	protected WorldGuardPlugin getWorldGuard() {
-		
+
 		try {
 			 Class.forName( "com.sk89q.worldguard.bukkit.WorldGuardPlugin" );
 			} catch( ClassNotFoundException e ) {
 			 return null;
 			}
-		
+
 		WorldGuardPlugin WG = (WorldGuardPlugin) getServer().getPluginManager().getPlugin("WorldGuard");
 		if (WG == null)
 			return null;
@@ -361,7 +380,7 @@ public class InvUnload extends JavaPlugin implements CommandExecutor, Listener {
 				getLogger().info("Hooked into WorldGuard succesfully.");
 				getLogger().info("*** Please note that WorldGuard integration is currently experimental ***");
 				getLogger().info("*** See the config.yml file for more information ***");
-			} 
+			}
 		}
 
 		// Config version prior to 1? Then it must have been generated by InvUnload 0.x
@@ -468,7 +487,7 @@ public class InvUnload extends JavaPlugin implements CommandExecutor, Listener {
 					playerInventory.remove(itemStack);
 
 					// try to add it to the chest
-					HashMap<Integer, ItemStack> unstorableItemStacks = chestInventory.addItem(itemStack);
+					HashMap<Integer, ItemStack> unstorableItemStacks = addItemsToChestInventory(chestInventory, itemStack);
 
 					if (unstorableItemStacks.size() == 0
 							|| unstorableItemStacks.get(0).getAmount() != itemStack.getAmount()) {
